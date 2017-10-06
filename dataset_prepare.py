@@ -4,6 +4,7 @@ import os
 import requests
 from requests.exceptions import HTTPError
 import glob
+import argparse
 
 
 def download_image(url, dest_folder, image_name):
@@ -25,7 +26,6 @@ def download_image(url, dest_folder, image_name):
         print("ERROR: Image cannot be downloaded from '{}'".format(url))
         return False
 
-
 def get_notation_file_list(folder_name):
     """
     :param folder_name: The folder path where contains notation files
@@ -34,7 +34,6 @@ def get_notation_file_list(folder_name):
     search_pattern = os.path.join(folder_name, "*.txt")
     notation_file_list = glob.glob(search_pattern)
     return sorted(notation_file_list)
-
 
 def load_notation_file(file_name):
     notation_content = read_csv(file_name, '\s+',
@@ -47,6 +46,21 @@ def get_person_name(file_name):
 def check_folder_name(folder_name):
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
+
+def main():
+    parser = argparse.ArgumentParser('Download Dataset and Generate Notation files')
+    parser.add_argument('--notation-file-path', help='File Path of Notations', required=True, type=str)
+    parser.add_argument('--download-folder', help='Output folder for downloaded images', required=True, type=str)
+    parser.add_argument('--notation-db', help='Numpy array image file for notations', required=True, type=str)
+    args = parser.parse_args()
+    if not os.path.exists(args.notation_file_path):
+        print("ERROR: Notation file folder cannot be found or existed. ")
+        print("ERROR: Program existed. ")
+        return
+
+    if not os.path.exists(args.download_folder):
+        os.mkdir(args.download_folder)
+
 
 
 if __name__ == "__main__":
