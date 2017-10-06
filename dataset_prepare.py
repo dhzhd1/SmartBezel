@@ -15,7 +15,7 @@ def download_image(url, dest_folder, image_name):
     """
     try:
         r = requests.get(url, stream=True)
-        with open(os.path.join(dest_folder, image_name), 'wb') as f:
+        with open(os.path.join(dest_folder, image_name + "." + url.split('.')[-1]), 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
@@ -77,5 +77,6 @@ if __name__ == "__main__":
         for i in xrange(5):
             download_image(content.url[i], dest_folder, '{0:08d}'.format(i))
 
-    test_download_image()
+
+
 
