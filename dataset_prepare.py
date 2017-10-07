@@ -5,6 +5,7 @@ import requests
 from requests.exceptions import HTTPError
 import glob
 import argparse
+import json
 
 
 def download_image(url, dest_folder, image_name):
@@ -16,7 +17,7 @@ def download_image(url, dest_folder, image_name):
     """
     try:
         r = requests.get(url, stream=True)
-        with open(os.path.join(dest_folder, image_name + "." + url.split('.')[-1]), 'wb') as f:
+        with open(os.path.join(dest_folder, image_name + ".jpg"), 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
@@ -38,6 +39,10 @@ def get_notation_file_list(folder_name):
 def load_notation_file(file_name):
     notation_content = read_csv(file_name, '\s+',
                                 names=["id", "url", "left", "top", "right", "bottom", "pose", "score", "curation"])
+    notation_content['width'] = notation_content['right'] - notation_content['left']
+    notation_content['height']  = notation_content['bottom'] - notation_content['top']
+    notation_content['center_x'] = notation_content['left'] + (notation_content['right'] - notation_content['left']) / 2
+    notation_content['center_y'] = notation_content['top'] + (notation_content['bottom'] - notation_content['top']) /2
     return notation_content
 
 def get_person_name(file_name):
@@ -46,6 +51,17 @@ def get_person_name(file_name):
 def check_folder_name(folder_name):
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
+
+def save_notation_db(notation_array, output_file):
+    try:
+        with open(output_file, 'w') as f:
+            json.dump(notation_array, f)
+        print("INFO: Notation DB has been saved on {}".format(output_file))
+        return True
+    except:
+        print("ERROR: Failed on save notation db")
+        return False
+
 
 def main():
     parser = argparse.ArgumentParser('Download Dataset and Generate Notation files')
@@ -58,9 +74,31 @@ def main():
         print("ERROR: Program existed. ")
         return
 
-    if not os.path.exists(args.download_folder):
-        os.mkdir(args.download_folder)
+    notation_file = []
 
+    check_folder_name(args.download_folder)
+    notation_file_list = get_notation_file_list(args.notation_file_path)
+    for file_name in notation_file_list:
+        person_name = get_person_name(file_name)
+        person_image_folder = os.path.join(args.download_folder, person_name)
+        check_folder_name(person_image_folder)
+        notation_file_content = load_notation_file(file_name)
+        for i in xrange(len(notation_file_content)):
+            print(notation_file_content.url[i])
+            if download_image(notation_file_content.url[i], person_image_folder,
+                              '{0:08d}'.format(int(notation_file_content.id[i]))):
+                img_note = []
+                img_note.append(person_name)
+                img_note.append(os.path.join(person_image_folder, '{0:08d}'.format(int(notation_file_content.id[i]))))
+                img_note.append([notation_file_content['left'], notation_file_content['top'],
+                                notation_file_content['right'], notation_file_content['bottom']])
+                img_note.append([notation_file_content['width'], notation_file_content['height']])
+                img_note.append([notation_file_content['center_x'], notation_file_content['center_y']])
+                notation_file.append(img_note)
+        print("Processed {}.".format(file_name))
+    print("All notation files have been processed!")
+
+    save_notation_db(notation_file, os.path.join(args.notation_db))
 
 
 if __name__ == "__main__":
@@ -91,6 +129,6 @@ if __name__ == "__main__":
         for i in xrange(5):
             download_image(content.url[i], dest_folder, '{0:08d}'.format(i))
 
-
+    main()
 
 
