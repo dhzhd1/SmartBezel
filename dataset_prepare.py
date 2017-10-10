@@ -87,13 +87,12 @@ def main():
             print(notation_file_content.url[i])
             if download_image(notation_file_content.url[i], person_image_folder,
                               '{0:08d}'.format(int(notation_file_content.id[i]))):
-                img_note = []
-                img_note.append(person_name)
-                img_note.append(os.path.join(person_image_folder, '{0:08d}'.format(int(notation_file_content.id[i]))))
-                img_note.append([notation_file_content['left'], notation_file_content['top'],
-                                notation_file_content['right'], notation_file_content['bottom']])
-                img_note.append([notation_file_content['width'], notation_file_content['height']])
-                img_note.append([notation_file_content['center_x'], notation_file_content['center_y']])
+                img_note = [person_name,
+                            os.path.join(person_image_folder, '{0:08d}'.format(int(notation_file_content.id[i]))),
+                            [notation_file_content['left'], notation_file_content['top'],
+                             notation_file_content['right'], notation_file_content['bottom']],
+                            [notation_file_content['width'], notation_file_content['height']],
+                            [notation_file_content['center_x'], notation_file_content['center_y']]]
                 notation_file.append(img_note)
         print("Processed {}.".format(file_name))
     print("All notation files have been processed!")
