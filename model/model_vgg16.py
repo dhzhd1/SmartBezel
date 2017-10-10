@@ -1,6 +1,6 @@
 import mxnet as mx
 
-def vgg16_symbol(num_classes):
+def vgg16_symbol(num_classes, train=True):
     data = mx.sym.Variable('data')
 
     # conv1
@@ -53,15 +53,23 @@ def vgg16_symbol(num_classes):
     # fc7
     fc7 = mx.sym.FullyConnected(data=drop6, num_hidden=4096, name="fc7")
     relu7 = mx.sym.Activation(data=fc7, act_type="relu", name="relu7")
-    drop7 = mx.sym.Dropout(data=relu7, p=0.5, name="drop7")
 
-    # fc8
-    fc8 = mx.sym.FullyConnected(data=drop7, num_hidden=num_classes, name="fc8")
-    softmax = mx.sym.SoftmaxOutput(data=fc8, name="softmax")
+    if train:
+        # dropout
+        drop7 = mx.sym.Dropout(data=relu7, p=0.5, name="drop7")
 
-    return softmax
+        # fc8
+        fc8 = mx.sym.FullyConnected(data=drop7, num_hidden=num_classes, name="fc8")
+        softmax = mx.sym.SoftmaxOutput(data=fc8, name="softmax")
+
+        return softmax
+
+    else:
+        # If not 'train', we will extract the feature from faces
+        return relu7
+
 
 if __name__ == "__main__":
-    net = vgg16_symbol()
+    net = vgg16_symbol(100, False)
     mx.viz.plot_network(net)
     print(net.get_internals())
