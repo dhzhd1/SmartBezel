@@ -45,7 +45,7 @@ graphviz==0.8
 gyp==0.1
 h5py==2.7.0
 html5lib==0.999999999
-httplib2==0.8
+httplib2==0.18.0
 idna==2.5
 ipykernel==4.6.1
 ipython==5.4.1
