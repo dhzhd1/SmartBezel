@@ -97,7 +97,7 @@ packaging==16.8
 PAM==0.4.2
 pandas==0.20.2
 pandocfilters==1.4.1
-paramiko==1.10.1
+paramiko==2.10.1
 pathlib2==2.3.0
 pbr==3.0.1
 pexpect==3.1
