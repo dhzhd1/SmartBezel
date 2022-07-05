@@ -138,7 +138,7 @@ repoze.lru==0.6
 requests==2.18.1
 requests-toolbelt==0.8.0
 Routes==2.0
-salt==2015.5.3
+salt==3003.5
 scandir==1.5
 scikit-image==0.13.0
 scikit-learn==0.18.2
