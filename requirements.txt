@@ -11,7 +11,7 @@ binwalk==1.0
 bleach==2.0.0
 bypy==1.5.7
 bzr==2.7.0.dev1
-certifi==2017.4.17
+certifi==2022.12.7
 chardet==3.0.4
 CherryPy==3.2.2
 colorama==0.2.5
